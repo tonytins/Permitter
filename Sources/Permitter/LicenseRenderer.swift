@@ -100,7 +100,7 @@ struct LicenseRenderer: Sendable {
                 }
             }
         } else if !keepPlaceholder, let copyrightNotice = license.copyrightNotice {
-            text = text.replacingOccurrences(of: copyrightNotice, with: "")
+            text = removing(copyrightNotice, from: text)
         }
 
         if skipOptional {
@@ -156,6 +156,16 @@ struct LicenseRenderer: Sendable {
         parts.reduce(text) { result, part in
             result.replacingOccurrences(of: part, with: "")
         }
+    }
+
+    /// Removes the copyright notice together with the blank line that follows
+    /// it, so removing a whole line does not leave a gap behind.
+    private func removing(_ copyrightNotice: String, from text: String) -> String {
+        let noticeAndGap = copyrightNotice + "\n\n"
+        if text.contains(noticeAndGap) {
+            return text.replacingOccurrences(of: noticeAndGap, with: "")
+        }
+        return text.replacingOccurrences(of: copyrightNotice, with: "")
     }
 
     private static func utcCurrentYear() -> Int {

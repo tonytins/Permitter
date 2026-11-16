@@ -1,22 +1,20 @@
 /// Normalizes rendered license text before it is written.
 ///
 /// Licensor embeds license texts exactly as published by the SPDX License
-/// List. That leaves trailing whitespace, uneven wrapping, and copyright
-/// notices glued to license titles. Permitter cleans those up so the output is
-/// consistent regardless of how the source text happens to be formatted.
+/// List. That leaves trailing whitespace and uneven wrapping. Permitter cleans
+/// those up so the output is consistent regardless of how the source text
+/// happens to be formatted.
 enum LicenseTextFormatter {
     static let defaultWidth = 80
 
     /// Formats license text without a trailing newline.
     static func format(_ text: String, width: Int = defaultWidth) -> String {
-        var lines =
+        let lines =
             text
             .replacingOccurrences(of: "\r\n", with: "\n")
             .replacingOccurrences(of: "\r", with: "\n")
             .split(separator: "\n", omittingEmptySubsequences: false)
             .map { trimmingTrailingWhitespace(String($0)) }
-
-        separateCopyrightNotice(&lines)
 
         var output: [String] = []
         var block: [String] = []
@@ -53,35 +51,6 @@ enum LicenseTextFormatter {
             end = index
         }
         return String(line[..<end])
-    }
-
-    /// Moves a copyright notice to its own line when it shares a line with the
-    /// license title, as in `MIT License Copyright (c) ...`.
-    private static func separateCopyrightNotice(_ lines: inout [String]) {
-        guard let index = lines.firstIndex(where: { !$0.isEmpty }) else {
-            return
-        }
-
-        let line = lines[index]
-        guard
-            let separator = line.range(
-                of: " Copyright ",
-                options: .backwards
-            )
-        else {
-            return
-        }
-
-        let title = String(line[..<separator.lowerBound])
-        guard title.hasSuffix("License"), title.count <= 60 else {
-            return
-        }
-
-        let notice = String(line[separator.upperBound...])
-        lines.replaceSubrange(
-            index...index,
-            with: [title, "", "Copyright " + notice]
-        )
     }
 
     private static func appendFormattedBlock(

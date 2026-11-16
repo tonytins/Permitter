@@ -50,7 +50,7 @@ Exactly one of `LICENSE`, `--licenses`, or `--exceptions` is required. The copyr
 - IDs are case-sensitive. An unknown ID prints similar IDs to standard error and exits with status 1.
 - When an exception is not designed for the selected license, the license is still written, a warning is printed to standard error, and the exit status is 0.
 - Broken pipes are treated as success, so commands such as `permitter GPL-3.0 | head` exit cleanly.
-- License text is normalized before it is written: trailing whitespace is removed, prose is wrapped to 80 columns, and a copyright notice that shares a line with the license title is moved onto its own line.
+- License text is normalized before it is written: trailing whitespace is removed and prose is wrapped to 80 columns.
 
 Permitter currently supports Linux and macOS. Windows support is not implemented.
 
@@ -68,7 +68,7 @@ To install to your local ``bin`` directory:
 
 ## License Data
 
-The source data under `Sources/Permitter/Resources/Licensor` was vendored from Licensor 2.1.0 and the SPDX License List. A build-tool plugin regenerates `LicenseCatalogData.swift` from those files on every build and compiles it into the executable, so no data files are needed at runtime. The files are also copied into the executable's resource bundle so the test suite can verify that the generated catalog still matches its source byte for byte.
+The source data under `Sources/Permitter/Resources/Licensor` was vendored from Licensor 2.1.0 and the SPDX License List. The MIT, Zlib, and ISC texts put the license title and the copyright notice on separate lines, as current SPDX texts do; the License List 3.7 that Licensor shipped had them on one line. A build-tool plugin regenerates `LicenseCatalogData.swift` from those files on every build and compiles it into the executable, so no data files are needed at runtime. The files are also copied into the executable's resource bundle so the test suite can verify that the generated catalog still matches its source byte for byte.
 
 After replacing the vendored files, run `swift build` and `swift test`.
 

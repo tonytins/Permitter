@@ -108,6 +108,35 @@ struct LicenseRendererTests {
         #expect(try result.text == fixture("ISC-name"))
     }
 
+    @Test func rendersISCWithoutCopyrightNotice() throws {
+        let result = try render(
+            "ISC",
+            copyrightHolder: nil,
+            keepPlaceholder: false,
+            skipOptional: false
+        )
+
+        #expect(try result.text == fixture("ISC-default"))
+        #expect(
+            result.text.contains(
+                "Copyright (c) 2004-2010 by Internet Systems Consortium, "
+                    + "Inc. (\"ISC\")\n\nPermission"
+            )
+        )
+    }
+
+    @Test func rendersZlibWithCopyrightHolder() throws {
+        let result = try render(
+            "Zlib",
+            copyrightHolder: "Tony Bark",
+            keepPlaceholder: false,
+            skipOptional: false
+        )
+
+        #expect(try result.text == fixture("Zlib-name"))
+        #expect(result.text.hasPrefix("zlib License\n\nCopyright (c) 2026 Tony Bark\n"))
+    }
+
     @Test func preservesUnicodeLicenseText() throws {
         let result = try render(
             "CDDL-1.1",

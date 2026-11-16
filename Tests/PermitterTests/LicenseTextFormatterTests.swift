@@ -9,25 +9,6 @@ struct LicenseTextFormatterTests {
         #expect(LicenseTextFormatter.format(text) == "Title\n\nBody")
     }
 
-    @Test func separatesCopyrightFromTitle() {
-        let text = """
-            MIT License Copyright (c) <year> <copyright holders>
-
-            Permission is hereby granted.
-            """
-
-        #expect(
-            LicenseTextFormatter.format(text)
-                == """
-                MIT License
-
-                Copyright (c) <year> <copyright holders>
-
-                Permission is hereby granted.
-                """
-        )
-    }
-
     @Test func reflowsPlainParagraphs() {
         let text = "one two three four five six seven"
 

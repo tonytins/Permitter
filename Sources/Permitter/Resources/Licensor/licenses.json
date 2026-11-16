@@ -81,7 +81,7 @@
     },
     "copyright": "Copyright (c) 1995-2003 by Internet Software Consortium",
     "optional": [
-      "ISC License Copyright (c) 2004-2010 by Internet Systems Consortium, Inc. (\"ISC\")"
+      "ISC License\n\nCopyright (c) 2004-2010 by Internet Systems Consortium, Inc. (\"ISC\")"
     ]
   },
   {
@@ -105,7 +105,7 @@
     },
     "copyright": "Copyright (c) <year> <copyright holders>",
     "optional": [
-      "MIT License "
+      "MIT License"
     ]
   },
   {
@@ -129,7 +129,7 @@
     },
     "copyright": "Copyright (c) <year> <copyright holders>",
     "optional": [
-      "zlib License "
+      "zlib License"
     ]
   }
 ]

@@ -13,6 +13,13 @@ Licensor never shipped that license.
   readable. Trailing whitespace has been removed, but line wrapping is left as
   published; Permitter normalizes it when rendering.
 
+`licenses/MIT.txt`, `licenses/Zlib.txt`, and `licenses/ISC.txt` differ from the
+Licensor copies in one way: the license title and the copyright notice are on
+separate lines, as they are in current SPDX texts. The License List 3.7 that
+Licensor shipped glued them together, as in `MIT License Copyright (c) <year>
+<copyright holders>`. The matching `optional` strings in `licenses.json` were
+updated with them.
+
 Licensor takes these texts from the [SPDX License List](https://spdx.org/licenses/).
 Each license text is governed by the license it describes; the metadata was
 published by the Licensor project under its MIT license.
