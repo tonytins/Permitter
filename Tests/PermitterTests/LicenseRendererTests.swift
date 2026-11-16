@@ -120,6 +120,18 @@ struct LicenseRendererTests {
         #expect(result.text.contains("ISC License\n\nPermission"))
     }
 
+    @Test func keepsCopyrightWhenNameAppearsElsewhere() throws {
+        let result = try render(
+            "PostgreSQL",
+            copyrightHolder: nil,
+            keepPlaceholder: false,
+            skipOptional: false
+        )
+
+        #expect(result.text.contains("Copyright (c) [year], [fullname]\n"))
+        #expect(result.text.contains("IN NO EVENT SHALL [fullname] BE LIABLE"))
+    }
+
     @Test func rendersZlibWithCopyrightHolder() throws {
         let result = try render(
             "Zlib",

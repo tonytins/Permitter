@@ -104,7 +104,11 @@ struct LicenseRenderer: Sendable {
                 }
             }
         } else if !keepPlaceholder, let copyrightNotice = license.copyrightNotice {
-            text = removing(copyrightNotice, from: text)
+            text = removing(
+                copyrightNotice,
+                nameToken: license.copyrightReplacement?.nameToken,
+                from: text
+            )
         }
 
         if skipOptional {
@@ -153,12 +157,28 @@ struct LicenseRenderer: Sendable {
 
     /// Removes the copyright notice together with the blank line that follows
     /// it, so removing a whole line does not leave a gap behind.
-    private func removing(_ copyrightNotice: String, from text: String) -> String {
+    ///
+    /// Some licenses use the name placeholder outside the notice, such as
+    /// PostgreSQL's warranty disclaimer. Removing the notice there would leave
+    /// `[fullname]` behind in the terms, so the notice stays until a name is
+    /// supplied.
+    private func removing(
+        _ copyrightNotice: String,
+        nameToken: String?,
+        from text: String
+    ) -> String {
         let noticeAndGap = copyrightNotice + "\n\n"
+        let withoutNotice: String
         if text.contains(noticeAndGap) {
-            return text.replacingOccurrences(of: noticeAndGap, with: "")
+            withoutNotice = text.replacingOccurrences(of: noticeAndGap, with: "")
+        } else {
+            withoutNotice = text.replacingOccurrences(of: copyrightNotice, with: "")
         }
-        return text.replacingOccurrences(of: copyrightNotice, with: "")
+
+        if let nameToken, withoutNotice.contains(nameToken) {
+            return text
+        }
+        return withoutNotice
     }
 
     private static func normalizingLineEndings(_ text: String) -> String {

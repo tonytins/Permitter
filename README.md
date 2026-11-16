@@ -41,7 +41,7 @@ permitter --exceptions
 | `-p`, `--keep-placeholder` | Keep the copyright notice when no name is given. |
 | `-o`, `--skip-optional` | Remove optional parts of the license and exception. |
 
-Exactly one of `LICENSE`, `--licenses`, or `--exceptions` is required. The copyright notice is removed when no name is given, unless `--keep-placeholder` is used. A name has no effect on licenses without a copyright notice.
+Exactly one of `LICENSE`, `--licenses`, or `--exceptions` is required. The copyright notice is removed when no name is given, unless `--keep-placeholder` is used. The notice stays when the name placeholder appears elsewhere in the terms, so the text cannot be left half-filled. A name has no effect on licenses without a copyright notice.
 
 ## Behaviour and Compatibility
 

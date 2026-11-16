@@ -134,7 +134,10 @@ raw `CDDL-1.1` text.
   sample unchanged, matching Licensor's behavior.
 - `copyright` is the notice removed when no holder is given and
   `--keep-placeholder` is false. It is the exact text in the new body,
-  including multi-line notices such as NCSA's `Developed by` block.
+  including multi-line notices such as NCSA's `Developed by` block. The
+  renderer keeps the notice when the name token still appears elsewhere in the
+  terms (PostgreSQL's warranty disclaimer, NCSA's non-endorsement clause), so
+  removing it cannot leave `[fullname]` behind.
 - `optional` strings are exact substrings of the new bodies. They are authored
   for the licenses that had optional parts before (MIT, ISC, Zlib, Unlicense,
   CC0, EPL, EUPL, Artistic, MPL, Apache, GPL/AGPL/LGPL, CDDL). New licenses

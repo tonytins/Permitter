@@ -40,6 +40,10 @@ unchanged, matching Licensor's behavior: a copyright holder has no effect on
 those licenses. `OFL-1.1` uses `[fullname] ([email])` as its name token so a
 holder name replaces both placeholders.
 
+When no name is given, the notice is removed only if the name token does not
+appear elsewhere in the terms. PostgreSQL and NCSA keep their notice because
+their disclaimers also use `[fullname]`.
+
 ## Exceptions
 
 `exceptions/*.txt` and `exceptions.json` are the four exceptions shipped with
