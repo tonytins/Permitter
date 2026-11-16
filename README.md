@@ -52,8 +52,7 @@ Exactly one of `LICENSE`, `--licenses`, or `--exceptions` is required. The copyr
 - Broken pipes are treated as success, so commands such as `permitter GPL-3.0 | head` exit cleanly.
 - License text is normalized before it is written: trailing whitespace is removed, prose is wrapped to 80 columns, and a copyright notice that shares a line with the license title is moved onto its own line.
 
-Permitter currently supports Linux and macOS. Windows support is not  
-implemented.
+Permitter currently supports Linux and macOS. Windows support is not implemented.
 
 ## Building
 
@@ -61,20 +60,15 @@ implemented.
 swift build -c release
 ```
 
-The executable is `.build/release/permitter`. Copy it somewhere on `PATH`:
+To install to your local ``bin`` directory:
 
 ```sh
-install -m 755 .build/release/permitter ~/.local/bin/permitter
+./install.sh
 ```
 
 ## License Data
 
-The source data under `Resources/Licensor` is vendored from Licensor 2.1.0,  
-which in turn takes its texts from the SPDX License List.
-
-The renderer normalizes whitespace and wrapping at runtime, so the vendored  
-texts keep their upstream line breaks. The generated catalog stores them  
-verbatim.
+The source data under `Resources/Licensor` was vendored from Licensor 2.1.0 and the SPDX License List.
 
 `Sources/Permitter/Generated/LicenseCatalogData.swift` is generated and committed so a normal build does not need the generator. After changing the JSON metadata or text files, regenerate it:
 
@@ -82,9 +76,7 @@ verbatim.
 swift Tools/GenerateLicenseCatalog.swift
 ```
 
-The generator accepts `--resources PATH` and `--output PATH` if the defaults  
-do not fit. The test suite verifies that the generated catalog still matches  
-the vendored files byte for byte.
+The generator accepts `--resources PATH` and `--output PATH` if the defaults do not fit. The test suite verifies that the generated catalog still matches the vendored files byte for byte.
 
 ## Background
 
@@ -96,8 +88,4 @@ Permitter follows the behavior of [Licensor](https://github.com/raftario/licenso
 
 ## License
 
-Permitter is licensed under the GNU General Public License v3.0. See  
-[`LICENSE`](LICENSE) for the full text.
-
-The vendored license and exception texts under `Resources/Licensor` belong to  
-the licenses they describe.
+I license this project under the GPL-3.0 license - see [LICENSE](LICENSE) for details.
