@@ -1,6 +1,15 @@
 {
-  "originHash" : "da23ef167b480ca78b16488e30d61e0220d4b4d5505d4adebead4de9569e22c5",
+  "originHash" : "100cbc11ed71ed333affa2cc9e2765cbd62a3afc78c1ee05e0dd59b9f27a1d94",
   "pins" : [
+    {
+      "identity" : "gitversion",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/tonytins/GitVersion.git",
+      "state" : {
+        "revision" : "485901ed762689af3abee8b65dd1c2f2a8d00750",
+        "version" : "0.2.0"
+      }
+    },
     {
       "identity" : "swift-argument-parser",
       "kind" : "remoteSourceControl",

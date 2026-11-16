@@ -9,7 +9,19 @@ struct Permitter: ParsableCommand {
         Self.main(nil)
     }
 
-    static let semanticVersion = "0.1.0"
+    /// The version to print. Clean builds show a plain semantic version, while a
+    /// dirty working tree keeps GitVersion's full string so the state is visible.
+    static var versionDescription: String {
+        guard GitVersion.current.isDirty else {
+            let version = GitVersion.current.semanticVersion
+            var description = "\(version.major).\(version.minor).\(version.patch)"
+            if let label = version.label {
+                description += "-\(label)"
+            }
+            return description
+        }
+        return GitVersion.version
+    }
 
     static let configuration = CommandConfiguration(
         commandName: "permitter",
@@ -76,7 +88,7 @@ struct Permitter: ParsableCommand {
 
     mutating func run() throws {
         if showVersion {
-            try write("permitter \(Self.semanticVersion)\n")
+            try write("permitter \(Self.versionDescription)\n")
             return
         }
 

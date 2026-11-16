@@ -9,7 +9,8 @@ let package = Package(
         .executable(name: "permitter", targets: ["Permitter"])
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.2.0")
+        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.2.0"),
+        .package(url: "https://github.com/tonytins/GitVersion.git", from: "0.2.0"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -17,7 +18,11 @@ let package = Package(
         .executableTarget(
             name: "Permitter",
             dependencies: [
-                .product(name: "ArgumentParser", package: "swift-argument-parser")
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+                .product(name: "GitVersion", package: "GitVersion"),
+            ],
+            plugins: [
+                .plugin(name: "GitVersionPlugin", package: "GitVersion")
             ]
         ),
         .testTarget(
