@@ -104,6 +104,57 @@ private func readText(at url: URL) throws -> String {
     }
 }
 
+private func readNonEmptyText(
+    for id: String,
+    kind: String,
+    at url: URL
+) throws -> String {
+    let text = try readText(at: url)
+    guard !text.isEmpty else {
+        throw GeneratorError.message(
+            "The text for \(kind) \(id) is empty: \(url.path)"
+        )
+    }
+    return text
+}
+
+/// Rejects IDs that are empty or shared by more than one entry.
+private func validateUniqueIDs(_ ids: [String], kind: String) throws {
+    var seen: Set<String> = []
+    for id in ids {
+        guard !id.isEmpty else {
+            throw GeneratorError.message("A \(kind) entry has an empty ID.")
+        }
+        guard seen.insert(id).inserted else {
+            throw GeneratorError.message("Duplicate \(kind) ID: \(id).")
+        }
+    }
+}
+
+/// Rejects empty tokens and tokens that do not occur in `text`.
+private func validateTokens(
+    of entryID: String,
+    in text: String,
+    _ tokens: [(kind: String, value: String?)]
+) throws {
+    for token in tokens {
+        guard let value = token.value else {
+            continue
+        }
+        guard !value.isEmpty else {
+            throw GeneratorError.message(
+                "\(entryID) has an empty \(token.kind)."
+            )
+        }
+        guard text.contains(value) else {
+            throw GeneratorError.message(
+                "The \(token.kind) for \(entryID) does not appear in its text: "
+                    + String(reflecting: value)
+            )
+        }
+    }
+}
+
 private func multiLineLiteral(
     _ value: String,
     indentation: String
@@ -189,11 +240,26 @@ private func makeOutput(
     let licenses = try readJSON([LicenseEntry].self, at: licensesJSON)
     let exceptions = try readJSON([ExceptionEntry].self, at: exceptionsJSON)
 
+    try validateUniqueIDs(licenses.map(\.id), kind: "license")
+    try validateUniqueIDs(exceptions.map(\.id), kind: "exception")
+
     var licenseBlocks: [String] = []
     for license in licenses {
-        let text = try readText(
+        let text = try readNonEmptyText(
+            for: license.id,
+            kind: "license",
             at: resources.appendingPathComponent("licenses/\(license.id).txt")
         )
+        var tokens: [(kind: String, value: String?)] = [
+            (kind: "copyright notice", value: license.copyright),
+            (kind: "year placeholder", value: license.replace?.year),
+            (kind: "name placeholder", value: license.replace?.name),
+        ]
+        tokens += (license.optional ?? []).map {
+            (kind: "optional part", value: $0)
+        }
+        try validateTokens(of: license.id, in: text, tokens)
+
         let replacement = optionalLiteral(license.replace) { replace in
             "CopyrightReplacement(yearToken: \(optionalLiteral(replace.year, transform: quotedLiteral)), "
                 + "nameToken: \(optionalLiteral(replace.name, transform: quotedLiteral)))"
@@ -220,9 +286,18 @@ private func makeOutput(
 
     var exceptionBlocks: [String] = []
     for exception in exceptions {
-        let text = try readText(
-            at: resources.appendingPathComponent("exceptions/\(exception.id).txt")
+        let text = try readNonEmptyText(
+            for: exception.id,
+            kind: "exception",
+            at: resources.appendingPathComponent(
+                "exceptions/\(exception.id).txt"
+            )
         )
+        let optionalTokens = (exception.optional ?? []).map {
+            (kind: "optional part", value: $0)
+        }
+        try validateTokens(of: exception.id, in: text, optionalTokens)
+
         let compatible = optionalLiteral(exception.with) { licenses in
             "[" + licenses.map(quotedLiteral).joined(separator: ", ") + "]"
         }
