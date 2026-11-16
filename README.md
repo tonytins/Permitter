@@ -74,13 +74,16 @@ The license texts under `Sources/Permitter/Resources/LicenseData/licenses` are v
 
 A build-tool plugin regenerates `LicenseCatalogData.swift` from those files on every build and compiles it into the executable, so no data files are needed at runtime. The files are also copied into the executable's resource bundle so the test suite can verify that the generated catalog still matches its source byte for byte.
 
+`LIST.md` lists every license and exception with a link to its SPDX page. It is generated from the same metadata, and a test fails when it drifts from the catalog.
+
 To refresh the license texts from a pinned commit:
 
 ```sh
 Scripts/vendor-choosealicense.sh
+Scripts/generate-license-list.sh
 ```
 
-Review the diff, then run `swift build` and `swift test`. The generator rejects missing or duplicate IDs, metadata without a text file (or the reverse), and placeholder or optional strings that no longer occur in their text.
+Review the diff, then run `swift build` and `swift test`. If the upstream set of IDs changed, update `licenses.json` before regenerating the list. The generator rejects missing or duplicate IDs, metadata without a text file (or the reverse), and placeholder or optional strings that no longer occur in their text.
 
 ## Background
 

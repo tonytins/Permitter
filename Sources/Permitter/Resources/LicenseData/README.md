@@ -17,9 +17,10 @@ Scripts/vendor-choosealicense.sh
 
 The script verifies each file's `spdx-id`, rejects missing or duplicate IDs,
 writes body-only files, and fails if upstream no longer has exactly 47
-licenses. Review the diff, then run:
+licenses. Update `licenses.json` if the set of IDs changed, then run:
 
 ```sh
+Scripts/generate-license-list.sh
 swift build
 swift test
 ```
@@ -60,3 +61,10 @@ Do not run a formatter over these files: their exact shape is the point.
 
 Exception text is the exception (pun intended): the vendored exceptions are
 single paragraphs, so Permitter wraps them to 80 columns when it appends one.
+
+## List
+
+`LIST.md` at the package root lists every ID with a link to its SPDX page. It
+is generated from this metadata with `Scripts/generate-license-list.sh`. The
+catalog test fails while the file is stale, so regenerate it after adding,
+removing, or renaming a license or exception.

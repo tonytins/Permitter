@@ -101,4 +101,5 @@ done < <(find "$license_directory" -maxdepth 1 -name '*.txt' -print | sort)
 printf '%s\n' "$commit" >"$commit_file"
 
 echo "Vendored $count licenses at $commit."
-echo "Review the text changes and run swift build and swift test."
+echo "Review the text changes. If IDs changed, update licenses.json first."
+echo "Then run Scripts/generate-license-list.sh, swift build, and swift test."

@@ -17,6 +17,8 @@ Permitter is a CLI program that print licenses or output them to files. It serve
 | `Sources/GenerateLicenseCatalog/main.swift`         | Catalog generator run by the build plugin.       |
 | `Plugins/GenerateLicenseCatalogPlugin/plugin.swift` | Build-tool plugin that generates the catalog.    |
 | `Scripts/vendor-choosealicense.sh`                  | Refreshes the vendored license texts.            |
+| `Scripts/generate-license-list.sh`                  | Regenerates `LIST.md` from the catalog metadata. |
+| `LIST.md`                                           | Generated roster of every license and exception. |
 
 ## Golden Rules
 
@@ -71,6 +73,9 @@ outranks features.
   IDs, and tokens or optional parts that no longer occur in their text.
 - **Refresh with the script, not by hand.** `Scripts/vendor-choosealicense.sh`
   pins the upstream commit, verifies `spdx-id`, and leaves `CDDL-1.1.txt` alone.
+- **Regenerate `LIST.md` after changing the data.** Run
+  `Scripts/generate-license-list.sh`; the catalog test fails while the file is
+  stale.
 
 ## Personal Configuration
 
