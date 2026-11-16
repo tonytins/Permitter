@@ -51,7 +51,7 @@ struct LicenseRendererTests {
 
         #expect(
             result.text.hasPrefix(
-                "MIT License Copyright (c) <year> <copyright holders>\n"
+                "MIT License\n\nCopyright (c) <year> <copyright holders>\n"
             )
         )
     }
@@ -149,7 +149,7 @@ struct LicenseRendererTests {
         )
         #expect(
             result.text.contains(
-                "Everyone is permitted to copy and distribute verbatim copies of this license document, but changing it\nis not allowed."
+                "Everyone is permitted to copy and distribute verbatim copies of this license\ndocument, but changing it is not allowed."
             )
         )
     }
@@ -167,6 +167,73 @@ struct LicenseRendererTests {
                 == fixture("GPL-2.0-WITH-Linux-syscall-note")
         )
         #expect(result.warning == nil)
+    }
+
+    @Test func rendersUnlicense() throws {
+        let result = try render(
+            "Unlicense",
+            copyrightHolder: nil,
+            keepPlaceholder: false,
+            skipOptional: false
+        )
+
+        #expect(try result.text == fixture("Unlicense-default"))
+    }
+
+    @Test func rendersEUPL() throws {
+        let result = try render(
+            "EUPL-1.2",
+            copyrightHolder: nil,
+            keepPlaceholder: false,
+            skipOptional: false
+        )
+
+        #expect(try result.text == fixture("EUPL-1.2-default"))
+        #expect(
+            result.text.hasPrefix(
+                "EUROPEAN UNION PUBLIC LICENCE v. 1.2\n\n"
+                    + "EUPL © the European Union 2007, 2016\n"
+            )
+        )
+    }
+
+    @Test func skipsEUPLHeader() throws {
+        let result = try render(
+            "EUPL-1.2",
+            copyrightHolder: nil,
+            keepPlaceholder: false,
+            skipOptional: true
+        )
+
+        #expect(
+            try result.text == fixture("EUPL-1.2-skip-optional")
+        )
+        #expect(result.text.hasPrefix("This European Union Public Licence"))
+    }
+
+    @Test func normalizesEveryLicense() throws {
+        for license in LicenseCatalog.builtIn.licenses {
+            let result = try render(
+                license.id,
+                copyrightHolder: "Tony Bark",
+                keepPlaceholder: false,
+                skipOptional: false
+            )
+
+            for line in result.text.split(
+                separator: "\n",
+                omittingEmptySubsequences: false
+            ) {
+                #expect(
+                    line.last != " " && line.last != "\t",
+                    "\(license.id) has trailing whitespace"
+                )
+                #expect(
+                    line.count <= 80,
+                    "\(license.id) has a line wider than 80 columns"
+                )
+            }
+        }
     }
 
     @Test func warnsAboutIncompatibleException() throws {

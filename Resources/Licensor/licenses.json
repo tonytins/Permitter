@@ -54,6 +54,12 @@
     ]
   },
   {
+    "id": "EUPL-1.2",
+    "optional": [
+      "EUROPEAN UNION PUBLIC LICENCE v. 1.2\n\nEUPL © the European Union 2007, 2016"
+    ]
+  },
+  {
     "id": "GPL-2.0",
     "optional": [
       "GNU GENERAL PUBLIC LICENSE\n\nVersion 2, June 1991",

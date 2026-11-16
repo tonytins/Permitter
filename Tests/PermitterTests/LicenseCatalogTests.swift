@@ -17,6 +17,7 @@ struct LicenseCatalogTests {
                 "CC0-1.0",
                 "CDDL-1.1",
                 "EPL-2.0",
+                "EUPL-1.2",
                 "GPL-2.0",
                 "GPL-3.0",
                 "ISC",

@@ -1,9 +1,10 @@
 # Permitter
 
 A drop-in replacement for [Licensor](https://github.com/raftario/licensor)
-written in Swift. It has the same arguments and writes the same SPDX license
-texts to standard output, using the same license and exception data as Licensor
-2.1.0.
+written in Swift. It has the same arguments and writes SPDX license texts to
+standard output, using the data from Licensor 2.1.0 plus EUPL-1.2. License text
+is normalized to remove trailing whitespace, put copyright notices on their own
+line, and wrap prose consistently.
 
 ## Usage
 
@@ -61,9 +62,13 @@ copyright notice.
   is 0.
 - Broken pipes are treated as success, so commands such as
   `permitter GPL-3.0 | head` exit cleanly.
+- License text is normalized before it is written: trailing whitespace is
+  removed, prose is wrapped to 80 columns, and a copyright notice that shares
+  a line with the license title is moved onto its own line.
 - The help and version text name this command and differ from Licensor's,
-  as do usage errors from the argument parser. License output, listings,
-  license and exception diagnostics, and exit statuses match Licensor 2.1.0.
+  as do usage errors from the argument parser. License selection, listings,
+  license and exception diagnostics, and exit statuses match Licensor 2.1.0;
+  whitespace and wrapping intentionally do not.
 
 Permitter currently supports Linux and macOS. Windows support is not
 implemented.
@@ -83,8 +88,13 @@ install -m 755 .build/release/permitter ~/.local/bin/permitter
 ## License data
 
 The source data under `Resources/Licensor` is vendored from Licensor 2.1.0,
-which in turn takes its texts from the SPDX License List. Each text belongs to
-the license it describes.
+which in turn takes its texts from the SPDX License List. EUPL-1.2 is not part
+of Licensor's catalog; its text was added from the SPDX License List. Each text
+belongs to the license it describes.
+
+The renderer normalizes whitespace and wrapping at runtime, so the vendored
+texts keep their upstream line breaks. The generated catalog stores them
+verbatim.
 
 `Sources/Permitter/Generated/LicenseCatalogData.swift` is generated and
 committed so a normal build does not need the generator. After changing the
@@ -104,9 +114,10 @@ the vendored files byte for byte.
 swift test
 ```
 
-The text wrapper and full-output fixtures were checked against Licensor 2.1.0.
-Fixtures under `Tests/PermitterTests/Fixtures` use the year 2026; renderer
-tests inject that year so they do not change over time.
+The text wrapper was checked against Licensor 2.1.0. Full-output fixtures
+capture Permitter's normalized output, which intentionally differs in
+whitespace and wrapping. Fixtures under `Tests/PermitterTests/Fixtures` use the
+year 2026; renderer tests inject that year so they do not change over time.
 
 ### Layout
 
@@ -115,6 +126,7 @@ tests inject that year so they do not change over time.
 | `Sources/Permitter/Permitter.swift` | Command-line interface. |
 | `Sources/Permitter/SPDXExpression.swift` | SPDX expression parsing. |
 | `Sources/Permitter/LicenseRenderer.swift` | License and exception rendering. |
+| `Sources/Permitter/LicenseTextFormatter.swift` | Whitespace cleanup and text reflow. |
 | `Sources/Permitter/TextWrapper.swift` | Port of `textwrap::fill` for exception wrapping. |
 | `Sources/Permitter/LicenseCatalog.swift` | Catalog types and lookups. |
 | `Sources/Permitter/StandardStream.swift` | Unbuffered standard stream writes. |

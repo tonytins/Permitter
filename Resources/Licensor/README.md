@@ -2,13 +2,16 @@
 
 These files are copied from [raftario/licensor](https://github.com/raftario/licensor)
 at commit `a7c74793e529667f58c2ea6bfcd0c6c08e9a1ed6`, which is the license and
-exception data shipped with Licensor 2.1.0.
+exception data shipped with Licensor 2.1.0. `licenses/EUPL-1.2.txt` was added
+separately from the [SPDX License List](https://spdx.org/licenses/) because
+Licensor never shipped that license.
 
 - `licenses.json` and `exceptions.json` contain the metadata Licensor uses to
   apply copyright placeholders and optional parts.
 - `licenses/*.txt` and `exceptions/*.txt` are the texts Licensor embeds after
   decompressing its gzipped copies. They are stored uncompressed so diffs stay
-  readable.
+  readable. Trailing whitespace has been removed, but line wrapping is left as
+  published; Permitter normalizes it when rendering.
 
 Licensor takes these texts from the [SPDX License List](https://spdx.org/licenses/).
 Each license text is governed by the license it describes; the metadata was

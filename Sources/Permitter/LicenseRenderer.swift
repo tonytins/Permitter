@@ -107,7 +107,7 @@ struct LicenseRenderer: Sendable {
             text = remove(license.optionalParts, from: text)
         }
 
-        text = text.removingSurroundingNewlines()
+        text = LicenseTextFormatter.format(text)
 
         var warning: String?
         if let exceptionID = expression.exceptionID {
