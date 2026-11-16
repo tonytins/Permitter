@@ -21,6 +21,9 @@ Do not edit these files by hand. Replace them with fresh copies from Licensor,
 then run:
 
 ```sh
-swift Tools/GenerateLicenseCatalog.swift
+swift build
 swift test
 ```
+
+The build plugin regenerates the catalog from these files, and the tests check
+it against them.

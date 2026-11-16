@@ -72,11 +72,12 @@ struct LicenseCatalogTests {
     }
 
     @Test func generatedCatalogMatchesVendoredResources() throws {
-        let root = URL(fileURLWithPath: #filePath)
-            .deletingLastPathComponent()
-            .deletingLastPathComponent()
-            .deletingLastPathComponent()
-        let resources = root.appendingPathComponent("Resources/Licensor")
+        let resources = try #require(
+            LicenseResources.bundle.url(
+                forResource: "Licensor",
+                withExtension: nil
+            )
+        )
 
         let rawLicenses = try decode(
             [RawLicense].self,

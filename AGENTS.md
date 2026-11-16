@@ -4,18 +4,19 @@ Permitter is a CLI program that print licenses or output them to files. It serve
 
 ## Project Structure
 
-| Path                                           | Contents                                         |
-| ---------------------------------------------- | ------------------------------------------------ |
-| `Sources/Permitter/Permitter.swift`            | Command-line interface.                          |
-| `Sources/Permitter/SPDXExpression.swift`       | SPDX expression parsing.                         |
-| `Sources/Permitter/LicenseRenderer.swift`      | License and exception rendering.                 |
-| `Sources/Permitter/LicenseTextFormatter.swift` | Whitespace cleanup and text reflow.              |
-| `Sources/Permitter/TextWrapper.swift`          | Port of `textwrap::fill` for exception wrapping. |
-| `Sources/Permitter/LicenseCatalog.swift`       | Catalog types and lookups.                       |
-| `Sources/Permitter/StandardStream.swift`       | Unbuffered standard stream writes.               |
-| `Sources/Permitter/Generated/`                 | Generated catalog data.                          |
-| `Tools/GenerateLicenseCatalog.swift`           | Catalog generator.                               |
-| `Resources/Licensor/`                          | Vendored Licensor metadata and texts.            |
+| Path                                                | Contents                                         |
+| --------------------------------------------------- | ------------------------------------------------ |
+| `Sources/Permitter/Permitter.swift`                 | Command-line interface.                          |
+| `Sources/Permitter/SPDXExpression.swift`            | SPDX expression parsing.                         |
+| `Sources/Permitter/LicenseRenderer.swift`           | License and exception rendering.                 |
+| `Sources/Permitter/LicenseTextFormatter.swift`      | Whitespace cleanup and text reflow.              |
+| `Sources/Permitter/TextWrapper.swift`               | Port of `textwrap::fill` for exception wrapping. |
+| `Sources/Permitter/LicenseCatalog.swift`            | Catalog types and lookups.                       |
+| `Sources/Permitter/StandardStream.swift`            | Unbuffered standard stream writes.               |
+| `Sources/Permitter/LicenseResources.swift`          | Bundle access for the vendored license data.     |
+| `Sources/Permitter/Resources/Licensor/`             | Vendored Licensor metadata and texts.            |
+| `Sources/GenerateLicenseCatalog/main.swift`         | Catalog generator run by the build plugin.       |
+| `Plugins/GenerateLicenseCatalogPlugin/plugin.swift` | Build-tool plugin that generates the catalog.    |
 
 ## Golden Rules
 
@@ -46,8 +47,8 @@ outranks features.
   `LicenseRenderError` values, not preconditions.
 - **Keep the catalog safe by construction**. The generator must reject
   duplicate or empty IDs, missing texts, and replacement tokens that never
-  appear in their text. Regenerate `Generated/LicenseCatalogData.swift` instead
-  of editing it by hand.
+  appear in their text. The catalog is generated from the vendored files during
+  every build; edit those files instead of any generated output.
 - **Treat standard output as a pipe that can close at any time**. Keep the
   unbuffered writer handling `EINTR`, `EPIPE`, and short writes, and make sure
   its loop cannot spin forever on a zero-byte write. Do not restore the default

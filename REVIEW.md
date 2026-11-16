@@ -10,10 +10,9 @@ Use this checklist when reviewing a change to Permitter. It is adapted from the 
   status. If it refers to an issue or to Licensor compatibility, check that the
   change addresses that context.
 - Check available build and test results. Run `swift build` and `swift test`
-  when the change or its verification warrants it. If `Resources/Licensor`, the
-  generator, or `Generated/LicenseCatalogData.swift` changed, run
-  `swift Tools/GenerateLicenseCatalog.swift` and confirm the committed catalog
-  still matches.
+  when the change or its verification warrants it. If the vendored data under
+  `Sources/Permitter/Resources/Licensor`, the generator, or the plugin changed,
+  rebuild so the catalog is regenerated, and confirm the resources still match.
 - Run the built binary for behavior the unit tests do not cover: an unknown ID,
   a `WITH` expression, conflicting flags, and `permitter GPL-3.0 | head`.
   Report any check you could not run.
@@ -32,7 +31,9 @@ Use this checklist when reviewing a change to Permitter. It is adapted from the 
   error or a defined result.
 - Does the generator reject duplicate or empty IDs, missing texts, and
   replacement tokens that do not occur in their text? Is the generated catalog
-  still in sync with `Resources/Licensor`?
+  still in sync with `Sources/Permitter/Resources/Licensor`?
+- Does the plugin list every vendored file as an input, so edits and new files
+  trigger regeneration?
 - Does the unbuffered writer still handle `EINTR`, `EPIPE`, and short writes,
   and can its loop terminate on a zero-byte write?
 - Do focused tests cover the changed behavior, with a regression test for each

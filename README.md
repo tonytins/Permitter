@@ -68,15 +68,9 @@ To install to your local ``bin`` directory:
 
 ## License Data
 
-The source data under `Resources/Licensor` was vendored from Licensor 2.1.0 and the SPDX License List.
+The source data under `Sources/Permitter/Resources/Licensor` was vendored from Licensor 2.1.0 and the SPDX License List. A build-tool plugin regenerates `LicenseCatalogData.swift` from those files on every build and compiles it into the executable, so no data files are needed at runtime. The files are also copied into the executable's resource bundle so the test suite can verify that the generated catalog still matches its source byte for byte.
 
-`Sources/Permitter/Generated/LicenseCatalogData.swift` is generated and committed so a normal build does not need the generator. After changing the JSON metadata or text files, regenerate it:
-
-```sh
-swift Tools/GenerateLicenseCatalog.swift
-```
-
-The generator accepts `--resources PATH` and `--output PATH` if the defaults do not fit. The test suite verifies that the generated catalog still matches the vendored files byte for byte.
+After replacing the vendored files, run `swift build` and `swift test`.
 
 ## Background
 

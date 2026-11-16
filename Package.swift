@@ -21,9 +21,21 @@ let package = Package(
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "GitVersion", package: "GitVersion"),
             ],
+            resources: [
+                .copy("Resources/Licensor")
+            ],
             plugins: [
-                .plugin(name: "GitVersionPlugin", package: "GitVersion")
+                .plugin(name: "GenerateLicenseCatalogPlugin"),
+                .plugin(name: "GitVersionPlugin", package: "GitVersion"),
             ]
+        ),
+        .executableTarget(
+            name: "GenerateLicenseCatalog"
+        ),
+        .plugin(
+            name: "GenerateLicenseCatalogPlugin",
+            capability: .buildTool(),
+            dependencies: ["GenerateLicenseCatalog"]
         ),
         .testTarget(
             name: "PermitterTests",
