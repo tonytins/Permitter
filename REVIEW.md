@@ -11,8 +11,9 @@ Use this checklist when reviewing a change to Permitter. It is adapted from the 
   change addresses that context.
 - Check available build and test results. Run `swift build` and `swift test`
   when the change or its verification warrants it. If the vendored data under
-  `Sources/Permitter/Resources/Licensor`, the generator, or the plugin changed,
-  rebuild so the catalog is regenerated, and confirm the resources still match.
+  `Sources/Permitter/Resources/LicenseData`, the generator, or the plugin
+  changed, rebuild so the catalog is regenerated, and confirm the resources
+  still match.
 - Run the built binary for behavior the unit tests do not cover: an unknown ID,
   a `WITH` expression, conflicting flags, and `permitter GPL-3.0 | head`.
   Report any check you could not run.
@@ -21,7 +22,8 @@ Use this checklist when reviewing a change to Permitter. It is adapted from the 
 
 - Does the rendered text match the stated intent for every affected license and
   exception, including optional parts, copyright placeholder handling, and the
-  trailing newline?
+  trailing newline? Is license text otherwise unchanged from its vendored copy,
+  with only exceptions reflowed to 80 columns?
 - Are the streams and exit status correct? Rendered text goes to standard
   output, warnings and errors to standard error, invalid input exits non-zero,
   and a closed pipe exits 0.
@@ -29,17 +31,19 @@ Use this checklist when reviewing a change to Permitter. It is adapted from the 
   slices, integer arithmetic, and `Dictionary(uniqueKeysWithValues:)`.
   Malformed expressions, empty IDs, unknown IDs, and long names must produce an
   error or a defined result.
-- Does the generator reject duplicate or empty IDs, missing texts, and
-  replacement tokens that do not occur in their text? Is the generated catalog
-  still in sync with `Sources/Permitter/Resources/Licensor`?
+- Does the generator reject duplicate or empty IDs, missing texts, metadata and
+  text files that do not match one another, and replacement tokens or optional
+  parts that do not occur in their text? Is the generated catalog still in sync
+  with `Sources/Permitter/Resources/LicenseData`?
 - Does the plugin list every vendored file as an input, so edits and new files
   trigger regeneration?
 - Does the unbuffered writer still handle `EINTR`, `EPIPE`, and short writes,
   and can its loop terminate on a zero-byte write?
 - Do focused tests cover the changed behavior, with a regression test for each
   fixed crash or malformed-input case? Do existing fixtures need updating?
-- Are the README, the `--help` text, and the behavior they describe still
-  accurate, and does the CLI remain a drop-in replacement for Licensor?
+- Are the README, the `LicenseData` README, the `--help` text, and the behavior
+  they describe still accurate, including the pinned choosealicense commit? Does
+  the CLI remain a drop-in replacement for Licensor?
 - Does the change follow Swift 6 language mode, the existing naming and
   `.swift-format`, and avoid unnecessary force unwraps or API changes?
 

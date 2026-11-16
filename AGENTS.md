@@ -9,14 +9,14 @@ Permitter is a CLI program that print licenses or output them to files. It serve
 | `Sources/Permitter/Permitter.swift`                 | Command-line interface.                          |
 | `Sources/Permitter/SPDXExpression.swift`            | SPDX expression parsing.                         |
 | `Sources/Permitter/LicenseRenderer.swift`           | License and exception rendering.                 |
-| `Sources/Permitter/LicenseTextFormatter.swift`      | Whitespace cleanup and text reflow.              |
 | `Sources/Permitter/TextWrapper.swift`               | Port of `textwrap::fill` for exception wrapping. |
 | `Sources/Permitter/LicenseCatalog.swift`            | Catalog types and lookups.                       |
 | `Sources/Permitter/StandardStream.swift`            | Unbuffered standard stream writes.               |
 | `Sources/Permitter/LicenseResources.swift`          | Bundle access for the vendored license data.     |
-| `Sources/Permitter/Resources/Licensor/`             | Vendored Licensor metadata and texts.            |
+| `Sources/Permitter/Resources/LicenseData/`          | Choose A License texts and exception metadata.   |
 | `Sources/GenerateLicenseCatalog/main.swift`         | Catalog generator run by the build plugin.       |
 | `Plugins/GenerateLicenseCatalogPlugin/plugin.swift` | Build-tool plugin that generates the catalog.    |
+| `Scripts/vendor-choosealicense.sh`                  | Refreshes the vendored license texts.            |
 
 ## Golden Rules
 
@@ -57,6 +57,20 @@ outranks features.
   Assertions belong in tests, not in shipped behavior.
 - **Add a focused regression test** for every crash, malformed-input, or
   broken-pipe fix.
+
+### License Data
+
+- **Do not reflow license text.** The vendored texts match the corpus GitHub
+  uses for detection. Only line endings, copyright placeholders, optional
+  parts, and the trailing newline may change. This is why `GFDL-1.3` keeps its
+  upstream trailing whitespace.
+- **Exceptions are the exception.** Their vendored texts are single paragraphs,
+  and detection does not use them, so Permitter wraps them to 80 columns.
+- **Keep `licenses.json` and the text files in step.** The generator rejects a
+  metadata entry without a text file, a text file without an entry, duplicate
+  IDs, and tokens or optional parts that no longer occur in their text.
+- **Refresh with the script, not by hand.** `Scripts/vendor-choosealicense.sh`
+  pins the upstream commit, verifies `spdx-id`, and leaves `CDDL-1.1.txt` alone.
 
 ## Personal Configuration
 

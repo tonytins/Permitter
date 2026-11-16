@@ -50,7 +50,7 @@ Exactly one of `LICENSE`, `--licenses`, or `--exceptions` is required. The copyr
 - IDs are case-sensitive. An unknown ID prints similar IDs to standard error and exits with status 1.
 - When an exception is not designed for the selected license, the license is still written, a warning is printed to standard error, and the exit status is 0.
 - Broken pipes are treated as success, so commands such as `permitter GPL-3.0 | head` exit cleanly.
-- License text is normalized before it is written: trailing whitespace is removed and prose is wrapped to 80 columns.
+- License text is written as published by choosealicense.com. Placeholders are filled in and `--skip-optional` removes the listed parts; nothing else is reflowed. Exception text is wrapped to 80 columns when it is appended.
 
 Permitter currently supports Linux and macOS. Windows support is not implemented.
 
@@ -68,9 +68,19 @@ To install to your local ``bin`` directory:
 
 ## License Data
 
-The source data under `Sources/Permitter/Resources/Licensor` was vendored from Licensor 2.1.0 and the SPDX License List. The MIT, Zlib, and ISC texts put the license title and the copyright notice on separate lines, as current SPDX texts do; the License List 3.7 that Licensor shipped had them on one line. A build-tool plugin regenerates `LicenseCatalogData.swift` from those files on every build and compiles it into the executable, so no data files are needed at runtime. The files are also copied into the executable's resource bundle so the test suite can verify that the generated catalog still matches its source byte for byte.
+The license texts under `Sources/Permitter/Resources/LicenseData/licenses` are vendored from [choosealicense.com](https://github.com/github/choosealicense.com) at commit `af50be9eb902b4329e70c33a5f5c9bab891ef26d`. That is the corpus GitHub's `licensee` uses for detection, so Permitter ships every license the site carries: 47 texts plus `CDDL-1.1`, which choosealicense.com does not have and is kept from the SPDX License List.
 
-After replacing the vendored files, run `swift build` and `swift test`.
+`licenses.json` is maintained for Permitter rather than vendored. It records the copyright placeholders to replace, the notice to remove when no name is given, and the parts removed by `--skip-optional`. The four exception texts still come from Licensor 2.1.0 and the SPDX License List.
+
+A build-tool plugin regenerates `LicenseCatalogData.swift` from those files on every build and compiles it into the executable, so no data files are needed at runtime. The files are also copied into the executable's resource bundle so the test suite can verify that the generated catalog still matches its source byte for byte.
+
+To refresh the license texts from a pinned commit:
+
+```sh
+Scripts/vendor-choosealicense.sh
+```
+
+Review the diff, then run `swift build` and `swift test`. The generator rejects missing or duplicate IDs, metadata without a text file (or the reverse), and placeholder or optional strings that no longer occur in their text.
 
 ## Background
 
@@ -78,7 +88,7 @@ Licensor hasn't been updated since 2023 and their last release is even older, 20
 
 ## Credits
 
-Permitter follows the behavior of [Licensor](https://github.com/raftario/licensor) by Raphaël Thériault and uses license texts from the [SPDX License List](https://spdx.org/licenses/).
+Permitter follows the behavior of [Licensor](https://github.com/raftario/licensor) by Raphaël Thériault. License texts come from [choosealicense.com](https://github.com/github/choosealicense.com), and exception texts come from the [SPDX License List](https://spdx.org/licenses/) via Licensor.
 
 ## License
 
