@@ -34,3 +34,10 @@ swift test
 
 The build plugin regenerates the catalog from these files, and the tests check
 it against them.
+
+`GenerateLicenseCatalog` rejects empty or duplicate IDs, missing or empty text
+files, copyright and placeholder tokens that do not occur in their text,
+optional parts that are empty or absent from their text, and exception `with`
+entries that name a license the catalog does not contain. The checks run on
+every build, so a mismatched edit fails `swift build` instead of changing the
+output.

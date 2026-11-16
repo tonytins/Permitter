@@ -155,6 +155,23 @@ private func validateTokens(
     }
 }
 
+/// Rejects exceptions that name licenses the catalog does not contain.
+private func validateCompatibleLicenses(
+    _ exceptions: [ExceptionEntry],
+    licenseIDs: Set<String>
+) throws {
+    for exception in exceptions {
+        for id in exception.with ?? [] {
+            guard licenseIDs.contains(id) else {
+                throw GeneratorError.message(
+                    "\(exception.id) is compatible with an unknown license: "
+                        + id
+                )
+            }
+        }
+    }
+}
+
 private func multiLineLiteral(
     _ value: String,
     indentation: String
@@ -242,6 +259,10 @@ private func makeOutput(
 
     try validateUniqueIDs(licenses.map(\.id), kind: "license")
     try validateUniqueIDs(exceptions.map(\.id), kind: "exception")
+    try validateCompatibleLicenses(
+        exceptions,
+        licenseIDs: Set(licenses.map(\.id))
+    )
 
     var licenseBlocks: [String] = []
     for license in licenses {
