@@ -108,10 +108,13 @@ License text is stored and emitted as published, with only these changes:
 - leading and trailing newlines are trimmed, and exactly one trailing newline
   is written.
 
-`LicenseTextFormatter` and `TextWrapper` are deleted, along with their tests.
-Exception text is appended as vendored, with surrounding newlines trimmed; it
-is no longer re-wrapped to the license's width. This intentionally preserves
-the one trailing-whitespace line in `GFDL-1.3`, and the raw `CDDL-1.1` text.
+`LicenseTextFormatter` is deleted, along with its tests. `TextWrapper` stays,
+but only for exceptions: the vendored exception texts are single paragraphs,
+license detection does not use them, and emitting them unwrapped would produce
+lines hundreds of columns wide. Exceptions are wrapped to 80 columns instead
+of the old behavior of matching the license's maximum line width. This
+intentionally preserves the one trailing-whitespace line in `GFDL-1.3`, and the
+raw `CDDL-1.1` text.
 
 ### Metadata
 
@@ -156,7 +159,7 @@ sorted metadata.
 - Replace `normalizesEveryLicense` with checks that every license renders with
   exactly one trailing newline and that the body matches its vendored file.
 - Replace `wrapsExceptionToLicenseWidth` with a check that the exception text
-  is appended verbatim.
+  is wrapped to 80 columns.
 - Keep the existing validation, SPDX, and broken-pipe coverage.
 
 ### Documentation

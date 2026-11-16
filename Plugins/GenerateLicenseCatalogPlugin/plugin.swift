@@ -9,7 +9,7 @@ struct GenerateLicenseCatalogPlugin: BuildToolPlugin {
     ) async throws -> [Command] {
         let tool = try context.tool(named: "GenerateLicenseCatalog")
         let resources = context.package.directoryURL.appendingPathComponent(
-            "Sources/Permitter/Resources/Licensor",
+            "Sources/Permitter/Resources/LicenseData",
             isDirectory: true
         )
         let output = context.pluginWorkDirectoryURL.appendingPathComponent(

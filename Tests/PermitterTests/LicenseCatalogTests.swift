@@ -6,26 +6,56 @@ import Testing
 struct LicenseCatalogTests {
     private let catalog = LicenseCatalog.builtIn
 
-    @Test func listsLicensesInCatalogOrder() {
+    @Test func listsLicensesAlphabetically() {
         #expect(
             catalog.licenseIDs == [
+                "0BSD",
+                "AFL-3.0",
                 "AGPL-3.0",
                 "Apache-2.0",
                 "Artistic-2.0",
                 "BSD-2-Clause",
+                "BSD-2-Clause-Patent",
                 "BSD-3-Clause",
+                "BSD-3-Clause-Clear",
+                "BSD-4-Clause",
+                "BSL-1.0",
+                "BlueOak-1.0.0",
+                "CC-BY-4.0",
+                "CC-BY-SA-4.0",
                 "CC0-1.0",
                 "CDDL-1.1",
+                "CECILL-2.1",
+                "CERN-OHL-P-2.0",
+                "CERN-OHL-S-2.0",
+                "CERN-OHL-W-2.0",
+                "ECL-2.0",
+                "EPL-1.0",
                 "EPL-2.0",
+                "EUPL-1.1",
                 "EUPL-1.2",
+                "GFDL-1.3",
                 "GPL-2.0",
                 "GPL-3.0",
                 "ISC",
                 "LGPL-2.1",
                 "LGPL-3.0",
+                "LPPL-1.3c",
                 "MIT",
+                "MIT-0",
                 "MPL-2.0",
+                "MS-PL",
+                "MS-RL",
+                "MulanPSL-2.0",
+                "NCSA",
+                "ODbL-1.0",
+                "OFL-1.1",
+                "OSL-3.0",
+                "PostgreSQL",
+                "UPL-1.0",
                 "Unlicense",
+                "Vim",
+                "WTFPL",
                 "Zlib",
             ]
         )
@@ -43,7 +73,7 @@ struct LicenseCatalogTests {
     }
 
     @Test func findsSimilarLicenseIDsIgnoringCase() {
-        #expect(catalog.similarLicenseIDs(to: "mit") == ["MIT"])
+        #expect(catalog.similarLicenseIDs(to: "mit") == ["MIT", "MIT-0"])
         #expect(
             catalog.similarLicenseIDs(to: "GPL-3.0")
                 == ["AGPL-3.0", "GPL-3.0", "LGPL-3.0"]
@@ -74,7 +104,7 @@ struct LicenseCatalogTests {
     @Test func generatedCatalogMatchesVendoredResources() throws {
         let resources = try #require(
             LicenseResources.bundle.url(
-                forResource: "Licensor",
+                forResource: "LicenseData",
                 withExtension: nil
             )
         )
@@ -88,8 +118,8 @@ struct LicenseCatalogTests {
             at: resources.appendingPathComponent("exceptions.json")
         )
 
-        #expect(catalog.licenseIDs == rawLicenses.map(\.id))
-        #expect(catalog.exceptionIDs == rawExceptions.map(\.id))
+        #expect(catalog.licenseIDs == rawLicenses.map(\.id).sorted())
+        #expect(catalog.exceptionIDs == rawExceptions.map(\.id).sorted())
 
         for raw in rawLicenses {
             let license = try #require(catalog.license(id: raw.id))

@@ -53,3 +53,6 @@ licenses they describe.
 License text is emitted as published. `GFDL-1.3` therefore keeps the trailing
 spaces that are present upstream, and `CDDL-1.1` keeps its SPDX formatting.
 Do not run a formatter over these files: their exact shape is the point.
+
+Exception text is the exception (pun intended): the vendored exceptions are
+single paragraphs, so Permitter wraps them to 80 columns when it appends one.

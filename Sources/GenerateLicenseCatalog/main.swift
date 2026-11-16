@@ -155,6 +155,56 @@ private func validateTokens(
     }
 }
 
+/// Rejects metadata entries without a text file, and text files without a
+/// metadata entry.
+private func validateResourceFiles(
+    at resources: URL,
+    kind: String,
+    ids: [String]
+) throws {
+    let folder = resources.appendingPathComponent(
+        kind + "s",
+        isDirectory: true
+    )
+    let files: [URL]
+    do {
+        files = try FileManager.default.contentsOfDirectory(
+            at: folder,
+            includingPropertiesForKeys: nil
+        )
+    } catch {
+        throw GeneratorError.message("Cannot read \(folder.path): \(error)")
+    }
+
+    var fileIDs: [String: String] = [:]
+    for file in files where file.pathExtension == "txt" {
+        let id = file.deletingPathExtension().lastPathComponent
+        if let firstPath = fileIDs[id] {
+            throw GeneratorError.message(
+                "Duplicate \(kind) text file for \(id): "
+                    + "\(firstPath) and \(file.path)"
+            )
+        }
+        fileIDs[id] = file.path
+    }
+
+    let metadataIDs = Set(ids)
+    let withoutMetadata = Set(fileIDs.keys).subtracting(metadataIDs).sorted()
+    if !withoutMetadata.isEmpty {
+        throw GeneratorError.message(
+            "Missing \(kind) metadata for: "
+                + withoutMetadata.joined(separator: ", ")
+        )
+    }
+
+    let withoutText = metadataIDs.subtracting(fileIDs.keys).sorted()
+    if !withoutText.isEmpty {
+        throw GeneratorError.message(
+            "Missing \(kind) text for: " + withoutText.joined(separator: ", ")
+        )
+    }
+}
+
 /// Rejects exceptions that name licenses the catalog does not contain.
 private func validateCompatibleLicenses(
     _ exceptions: [ExceptionEntry],
@@ -255,10 +305,22 @@ private func makeOutput(
     resources: URL
 ) throws -> String {
     let licenses = try readJSON([LicenseEntry].self, at: licensesJSON)
+        .sorted { $0.id < $1.id }
     let exceptions = try readJSON([ExceptionEntry].self, at: exceptionsJSON)
+        .sorted { $0.id < $1.id }
 
     try validateUniqueIDs(licenses.map(\.id), kind: "license")
     try validateUniqueIDs(exceptions.map(\.id), kind: "exception")
+    try validateResourceFiles(
+        at: resources,
+        kind: "license",
+        ids: licenses.map(\.id)
+    )
+    try validateResourceFiles(
+        at: resources,
+        kind: "exception",
+        ids: exceptions.map(\.id)
+    )
     try validateCompatibleLicenses(
         exceptions,
         licenseIDs: Set(licenses.map(\.id))

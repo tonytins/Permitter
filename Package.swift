@@ -22,7 +22,8 @@ let package = Package(
                 .product(name: "GitVersion", package: "GitVersion"),
             ],
             resources: [
-                .copy("Resources/Licensor")
+                .copy("Resources/Licensor"),
+                .copy("Resources/LicenseData"),
             ],
             plugins: [
                 .plugin(name: "GenerateLicenseCatalogPlugin"),

@@ -48,6 +48,10 @@ struct LicenseRenderer: Sendable {
         "This exception wasn't designed to be used with this license. "
         + "Please consider using another license or removing it."
 
+    /// Exceptions are the only text Permitter reflows. Their vendored copies
+    /// are single paragraphs, and license detection does not use them.
+    private static let exceptionWidth = 80
+
     let catalog: LicenseCatalog
     private let currentYear: @Sendable () -> Int
 
@@ -82,7 +86,7 @@ struct LicenseRenderer: Sendable {
             )
         }
 
-        var text = license.text.replacingOccurrences(of: "\r", with: "")
+        var text = Self.normalizingLineEndings(license.text)
 
         if let copyrightHolder {
             if let replacement = license.copyrightReplacement {
@@ -107,7 +111,7 @@ struct LicenseRenderer: Sendable {
             text = remove(license.optionalParts, from: text)
         }
 
-        text = LicenseTextFormatter.format(text)
+        text = text.removingSurroundingNewlines()
 
         var warning: String?
         if let exceptionID = expression.exceptionID {
@@ -124,30 +128,19 @@ struct LicenseRenderer: Sendable {
                 warning = Self.incompatibleExceptionWarning
             }
 
-            var exceptionText = exception.text.replacingOccurrences(
-                of: "\r",
-                with: ""
-            )
+            var exceptionText = Self.normalizingLineEndings(exception.text)
             if skipOptional {
                 exceptionText = remove(exception.optionalParts, from: exceptionText)
             }
-
-            let maximumLineLength = max(
-                40,
-                text.split(
-                    separator: "\n",
-                    omittingEmptySubsequences: false
-                ).map(\.utf8.count).max() ?? 0
-            )
             exceptionText = TextWrapper.fill(
                 exceptionText,
-                width: maximumLineLength
-            )
-            exceptionText = exceptionText.removingSurroundingNewlines()
+                width: Self.exceptionWidth
+            ).removingSurroundingNewlines()
 
             text += "\n\n\n" + exceptionText
         }
 
+        text = text.removingSurroundingNewlines()
         text += "\n"
         return RenderedLicense(text: text, warning: warning)
     }
@@ -166,6 +159,11 @@ struct LicenseRenderer: Sendable {
             return text.replacingOccurrences(of: noticeAndGap, with: "")
         }
         return text.replacingOccurrences(of: copyrightNotice, with: "")
+    }
+
+    private static func normalizingLineEndings(_ text: String) -> String {
+        text.replacingOccurrences(of: "\r\n", with: "\n")
+            .replacingOccurrences(of: "\r", with: "\n")
     }
 
     private static func utcCurrentYear() -> Int {

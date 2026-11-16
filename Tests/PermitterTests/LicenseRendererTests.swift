@@ -51,7 +51,7 @@ struct LicenseRendererTests {
 
         #expect(
             result.text.hasPrefix(
-                "MIT License\n\nCopyright (c) <year> <copyright holders>\n"
+                "MIT License\n\nCopyright (c) [year] [fullname]\n"
             )
         )
     }
@@ -117,12 +117,7 @@ struct LicenseRendererTests {
         )
 
         #expect(try result.text == fixture("ISC-default"))
-        #expect(
-            result.text.contains(
-                "Copyright (c) 2004-2010 by Internet Systems Consortium, "
-                    + "Inc. (\"ISC\")\n\nPermission"
-            )
-        )
+        #expect(result.text.contains("ISC License\n\nPermission"))
     }
 
     @Test func rendersZlibWithCopyrightHolder() throws {
@@ -134,7 +129,7 @@ struct LicenseRendererTests {
         )
 
         #expect(try result.text == fixture("Zlib-name"))
-        #expect(result.text.hasPrefix("zlib License\n\nCopyright (c) 2026 Tony Bark\n"))
+        #expect(result.text.hasPrefix("zlib License\n\n(C) 2026 Tony Bark\n"))
     }
 
     @Test func preservesUnicodeLicenseText() throws {
@@ -164,23 +159,30 @@ struct LicenseRendererTests {
         #expect(result.warning == nil)
     }
 
-    @Test func wrapsExceptionToLicenseWidth() throws {
+    @Test func wrapsExceptionTextToEightyColumns() throws {
         let result = try render(
             "GPL-3.0 WITH GCC-exception-3.1",
             copyrightHolder: nil,
             keepPlaceholder: false,
             skipOptional: false
         )
+        let marker = "\n\n\nGCC RUNTIME LIBRARY EXCEPTION\n"
+        let range = try #require(result.text.range(of: marker))
 
         #expect(
             try result.text
                 == fixture("GPL-3.0-WITH-GCC-exception-3.1")
         )
-        #expect(
-            result.text.contains(
-                "Everyone is permitted to copy and distribute verbatim copies of this license\ndocument, but changing it is not allowed."
+
+        for line in result.text[range.upperBound...].split(
+            separator: "\n",
+            omittingEmptySubsequences: false
+        ) {
+            #expect(
+                line.count <= 80,
+                "Exception line is wider than 80 columns: \(line)"
             )
-        )
+        }
     }
 
     @Test func rendersLinuxSyscallNote() throws {
@@ -220,8 +222,8 @@ struct LicenseRendererTests {
         #expect(try result.text == fixture("EUPL-1.2-default"))
         #expect(
             result.text.hasPrefix(
-                "EUROPEAN UNION PUBLIC LICENCE v. 1.2\n\n"
-                    + "EUPL © the European Union 2007, 2016\n"
+                "                      EUROPEAN UNION PUBLIC LICENCE v. 1.2\n"
+                    + "                      EUPL © the European Union 2007, 2016\n"
             )
         )
     }
@@ -240,28 +242,52 @@ struct LicenseRendererTests {
         #expect(result.text.hasPrefix("This European Union Public Licence"))
     }
 
-    @Test func normalizesEveryLicense() throws {
+    @Test func emitsVendoredTextWithoutReflowing() throws {
+        let license = try #require(
+            LicenseCatalog.builtIn.license(id: "Apache-2.0")
+        )
+        let result = try render(
+            "Apache-2.0",
+            copyrightHolder: nil,
+            keepPlaceholder: false,
+            skipOptional: false
+        )
+
+        #expect(result.text == license.text.removingSurroundingNewlines() + "\n")
+    }
+
+    @Test func preservesGFDLTrailingWhitespace() throws {
+        let result = try render(
+            "GFDL-1.3",
+            copyrightHolder: nil,
+            keepPlaceholder: false,
+            skipOptional: false
+        )
+
+        #expect(
+            result.text.contains(
+                "\"CC-BY-SA\" means the Creative Commons Attribution-Share Alike 3.0 \n"
+            )
+        )
+    }
+
+    @Test func everyLicenseEndsWithOneNewline() throws {
         for license in LicenseCatalog.builtIn.licenses {
             let result = try render(
                 license.id,
-                copyrightHolder: "Tony Bark",
+                copyrightHolder: nil,
                 keepPlaceholder: false,
                 skipOptional: false
             )
 
-            for line in result.text.split(
-                separator: "\n",
-                omittingEmptySubsequences: false
-            ) {
-                #expect(
-                    line.last != " " && line.last != "\t",
-                    "\(license.id) has trailing whitespace"
-                )
-                #expect(
-                    line.count <= 80,
-                    "\(license.id) has a line wider than 80 columns"
-                )
-            }
+            #expect(
+                result.text.hasSuffix("\n"),
+                "\(license.id) has no trailing newline"
+            )
+            #expect(
+                !result.text.hasSuffix("\n\n"),
+                "\(license.id) has more than one trailing newline"
+            )
         }
     }
 
